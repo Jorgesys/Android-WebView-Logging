@@ -9,4 +9,4 @@ Android WebView Logging application.
 
 # What does it look like?
 
-![Jorgesys WebView](https://i.stack.imgur.com/1W0vU.png)
+![Jorgesys WebView](https://i.stack.imgur.com/jqaw9.png)
