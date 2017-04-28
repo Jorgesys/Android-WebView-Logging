@@ -2,6 +2,7 @@ package com.jorgesys.webview;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.http.SslError;
 import android.os.Build;
@@ -23,8 +24,8 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String TAG ="MainActivity";
-    private static String url = "http://www.stackoverflow.com"; //my favourite site!
+    private static final String TAG ="WebViewLog";
+    private static String url = "https://mail.google.com"; //my favourite site! //"https://webkit.lemonway.fr/ejemplo/?moneyintoken=shidotoken"; //
     private ProgressDialog progressBar;
     private WebView webview;
     private EditText editText;
@@ -51,8 +52,12 @@ public class MainActivity extends AppCompatActivity {
 
         webview.setWebViewClient(new WebViewClient() {
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                Log.i(TAG, "Processing webview url click...");
+                Log.i(TAG, "shouldOverrideUrlLoading() DEPRECATED Processing webview url click...");
                 writeToLog("Processing webview url " + url);
+                if(url.contains("moneyintoken")){
+                    Log.i(TAG, "****contiene token ");
+                }
+
                 view.loadUrl(url);
                 return true;
             }
@@ -60,10 +65,20 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    writeToLog("Processing webview url " + request.getUrl().toString());
+                    writeToLog("shouldOverrideUrlLoading() Processing webview url " + request.getUrl().toString());
+
+                    if( request.getUrl().toString().contains("moneyintoken")){
+                        Log.i(TAG, "2 ****contiene token ");
+                    }
+
                 }else{
                     writeToLog("Processing webview url " + request.toString());
+
+                    if( request.toString().contains("moneyintoken")){
+                        Log.i(TAG, "2 ****contiene token ");
+                    }
                 }
+
 
                 return true;
             }
@@ -77,9 +92,18 @@ public class MainActivity extends AppCompatActivity {
             }
 
             public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
-                Log.e(TAG, "Error: " + description);
+                Log.e(TAG, "onReceivedError DEPRECATED Error: " + description);
                 Toast.makeText(getApplicationContext(), "Oh no! " + description, Toast.LENGTH_SHORT).show();
                 writeToLog("Error: " + description, 1);
+            }
+
+
+            @Override
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                super.onPageStarted(view, url, favicon);
+                String newUrl = view.getUrl();
+                Log.i(TAG,"onPageStarted() URL: " + url + " newURL: " + newUrl);
+                writeToLog("onPageStarted() URL: " + url + " newURL: " + newUrl);
             }
 
             @Override
@@ -103,10 +127,14 @@ public class MainActivity extends AppCompatActivity {
 
                 writeToLog(message, 1);
                 handler.proceed();
+
+                Log.e(TAG, "onReceivedError DEPRECATED Error: " + message);
             }
 
         });
         webview.loadUrl(url);
+
+
     }
 
     private void writeToLog(String msg) {
